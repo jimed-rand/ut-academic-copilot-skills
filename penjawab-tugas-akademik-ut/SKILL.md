@@ -189,14 +189,22 @@ Jangan pernah menyisakan kalimat pembuka/penutup asisten seperti *"Tentu, beriku
 | *"Dengan demikian, dapat disimpulkan bahwa..."* / *"Secara keseluruhan..."* di akhir tiap paragraf | Kalimat penutup satu baris yang hanya mengulang kalimat sebelumnya | Hapus kalimat simpulan repetitif; biarkan paragraf berhenti pada bukti, contoh konkret, atau implikasi operasional terakhir. |
 | *Em-dash* (`—`) berulang, **huruf tebal** di tengah kalimat prosa, atau *rule of three* (tiga kata sifat berurutan di tiap kalimat) | Tanda baca dan ritme sintaksis seragam khas generator teks | Gunakan koma, titik, atau tanda kurung biasa; jangan menebalkan kata di badan paragraf; variasikan struktur klausa. |
 
-### C. Kaidah Positif Penulisan Manusiawi (Burstiness, Portability Test, & Kalibrasi Klaim)
-1. **Variasi Ritme Kalimat (*Burstiness*)**: Campurkan kalimat pendek yang tegas (8–12 kata) dengan kalimat analitis bermuatan teknis (20–30 kata). Hindari deretan kalimat dengan panjang seragam (standar deviasi panjang kalimat dalam paragraf panjang harus ≥ 3,0 kata).
-2. **Uji Tukar Topik (*Portability Test*)**: Jika sebuah kalimat tetap terdengar cocok saat dipindahkan ke jawaban mata kuliah lain hanya dengan mengganti kata benda utamanya (misal: *"Penerapan kerangka ini meningkatkan efisiensi dan efektivitas organisasi secara signifikan"*), kalimat tersebut adalah *slop*. Ganti dengan mekanisme spesifik dari kasus soal.
-3. **Kalibrasi Klaim & Hedging (Aturan `verify-claims`)**:
+### C. Kaidah Positif Penulisan Manusiawi & Standar Lolos DrillBit (< 30% AI & Similaritas)
+1. **Variasi Ritme Kalimat & Pemutus Ritme (*DrillBit Burstiness Rule*)**:
+   - Berdasarkan kalibrasi laporan *DrillBit AI Content Detection*, 84,4% paragraf yang ditandai sebagai teks AI adalah paragraf ≥ 3 kalimat yang seluruh kalimatnya berukuran sedang-panjang (≥ 16 kata) tanpa kalimat pendek.
+   - Oleh karena itu, **pada setiap paragraf prosa ≥ 3 kalimat (≥ 60 kata), wajib ada minimal satu kalimat pendek yang tegas (6–13 kata)** yang diselingkan dengan kalimat analitis bermuatan teknis (20–35 kata), sehingga `min_sent <= 13` atau koefisien variasi panjang kalimat (`CV = SD / rata-rata`) ≥ 0,36.
+2. **Reduksi Sintaksis Terjemahan Inggris SVO (`me-...-kan`), Adverbia `secara`, & Kopula `merupakan`**:
+   - **Batas verba aktif transitif `me-...-kan/-i` < 30,0 per 1.000 kata**: hindari pola monoton `[Subjek abstrak] + me-...-kan + [objek]` (*menunjukkan*, *menegaskan*, *membuktikan*, *menghadirkan*, *memungkinkan*, *melahirkan*, *menggarisbawahi*). Ubah sebagian kalimat ke konstruksi pasif (`di-...-kan` / `ter-`), klausa nominal, atau pembuka preposisional (*Di tingkat...*, *Pada ranah...*, *Dari sisi...*).
+   - **Batas adverbia `secara <adjektiva>` < 6,0 per 1.000 kata** (*secara langsung* → *langsung*, *secara mandiri* → *mandiri*, *secara eksplisit* → *tegas*) dan **kopula `merupakan` < 1,0 per 1.000 kata** (variasikan dengan *adalah*, *ialah*, *menjadi*).
+   - **Variasi Pembuka Daftar Berpoin (*Layout Regularity*)**: jangan mengawali butir daftar berurutan (`1., 2., 3.` atau `a., b., c.`) dengan kata kerja atau kopula yang sama setelah titik dua (`Merupakan...`, `Mengevaluasi...`, `Menyediakan...`).
+3. **Parafrase Struktural Mendalam (Target Similaritas & AI DrillBit < 30%, Target Pengaman < 15%)**:
+   - Saat memparafrasekan materi BMP, artikel jurnal, atau draf tugas sebelumnya, jangan sekadar mengganti sinonim kata per kata. Balik urutan klausa (anak kalimat ↔ induk kalimat), ubah aktif ↔ pasif, pecah atau gabungkan kalimat, dan pastikan overlap 8-gram terhadap naskah asal `< 15%` agar lolos pemindaian **DrillBit** jauh di bawah ambang **30%**.
+4. **Uji Tukar Topik (*Portability Test*)**: Jika sebuah kalimat tetap terdengar cocok saat dipindahkan ke jawaban mata kuliah lain hanya dengan mengganti kata benda utamanya (misal: *"Penerapan kerangka ini meningkatkan efisiensi dan efektivitas organisasi secara signifikan"*), kalimat tersebut adalah *slop*. Ganti dengan mekanisme spesifik dari kasus soal.
+5. **Kalibrasi Klaim & Hedging (Aturan `verify-claims`)**:
    - Jangan gunakan kata *signifikan* kecuali merujuk pada uji statistik atau angka selisih yang terukur.
    - Jangan gunakan klaim absolut (*selalu*, *menjamin sepenuhnya*, *satu-satunya*) tanpa syarat batas teknisnya.
    - Setiap angka di dalam teks narasi wajib sama persis dengan angka di dalam tabel atau log keluaran skrip.
-4. **Disiplin Istilah Asing (PUEBI/EYD)**:
+6. **Disiplin Istilah Asing (PUEBI/EYD)**:
    - Cetak miring (*italic*) istilah bahasa asing yang belum diserap ke dalam KBBI di bidang apa pun, misalnya: *stakeholder*, *governance*, *supply chain*, *cash flow*, *return on investment*, *judicial review*, *due process*, *scaffolding*, *blended learning*, *randomized controlled trial*, *open standard*, *single point of failure*, *switching costs*, *throughput*, *defense in depth*.
    - **Jangan** memiringkan nama diri, merek, lembaga, singkatan/standar berhuruf kapital (`PDRB`, `UMKM`, `BUMN`, `KUHP`, `KUHPer`, `PSAK`, `RPP`, `CP/ATP`, `WHO`, `UNESCO`, `SPSS`, `SQL`, `VLAN`, `OSPF`, `ISO/IEC 27001`, `QGIS`), atau kata serapan yang sudah baku di KBBI (*server*, *klien*, *jaringan*, *topologi*, *konfigurasi*, *infrastruktur*, *aplikasi*, *basis data*, *komputasi*, *virtualisasi*, *enkripsi*, *autentikasi*, *lisensi*, *manajemen*, *investasi*, *regulasi*, *evaluasi*, *kurikulum*).
 

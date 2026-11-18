@@ -25,9 +25,9 @@ Jangan menyimpan atau menyertakan data pribadi nyata secara permanen di dalam sk
 
 ### 2. Mode Mesin Lokal (CLI) vs. Mode Web AI/LLM
 - **Bila dijalankan di Mesin Lokal (`<direktori-kerja>`)**:
-  - **Manipulasi Dokumen Kumulatif (`.odt` / `.docx`)**: Baca dan perbarui berkas `.odt` tugas sebelumnya secara langsung menggunakan modul standar Python (`zipfile` + `xml.etree.ElementTree` pada `content.xml` dan `styles.xml`) agar bagian yang sudah dinilai baik ("Dipertahankan") tidak berubah sedikit pun. Pastikan setiap istilah asing dibungkus dengan `<text:span text:style-name="T_Italic">` (atau style italic aktif seperti `T2`) dan menggunakan font serif (Times New Roman / Liberation Serif).
+  - **Manipulasi Dokumen Kumulatif (`.odt` / `.docx`)**: Baca dan perbarui berkas `.odt` tugas sebelumnya menggunakan modul standar Python (`zipfile` + `xml.etree.ElementTree` pada `content.xml` dan `styles.xml`) atau skrip bantu `scripts/odt_para.py` (`extract`, `inject`, `pack`). Untuk Tugas 2–3, pertahankan bagian yang sudah dinilai baik ("Dipertahankan"); khusus untuk **Tugas 4 (atau ketika pengguna meminta parafrase anti-DrillBit)**, lakukan parafrase struktural menyeluruh pada seluruh bab kumulatif agar skor **DrillBit AI Content Detection < 30%** dan **DrillBit Similarity < 30%** (target utama **< 15%**). Pastikan setiap istilah asing dibungkus dengan `<text:span text:style-name="T_Italic">` (atau style italic aktif seperti `T2`/`T3`) dan menggunakan font serif (Times New Roman / Liberation Serif).
   - **Kompilasi & Pemeriksaan Visual PDF**: Konversi `.odt` ke `.pdf` dengan `libreoffice --headless --convert-to pdf <berkas.odt>`, lalu jalankan `pdftoppm -png -r 150 <berkas.pdf> /tmp/page` atau `pdftotext` untuk memeriksa halaman Daftar Isi (pastikan judul `DAFTAR ISI` tidak tercetak ganda di batas halaman), tabel tidak terpotong buruk, dan nomor halaman sinkron 100%.
-  - **Audit Otomatis & Pencarian Literatur Lokal**: Jalankan `python3 scripts/ut_audit.py <berkas.odt|.md>` untuk memindai pola AI slop Bahasa Indonesia/Inggris, *burstiness* kalimat, disiplin cetak miring PUEBI, duplikasi Daftar Isi, dan kesesuaian 1-ke-1 kutipan in-text vs Daftar Pustaka. Gunakan `scripts/crossref_search.py`, `scripts/s2_search.py`, dan `scripts/resolve_papers.py` (serta pencarian web) untuk memverifikasi metadata DOI/jurnal.
+  - **Audit Otomatis, Estimasi DrillBit (< 30%), & Pencarian Literatur Lokal**: Jalankan `python3 scripts/ut_audit.py <berkas.odt|.md> --ref <Tugas1.odt> <Tugas2.odt> <Tugas3.odt>` untuk memindai pola AI slop Bahasa Indonesia/Inggris, mengestimasi skor **DrillBit AI Content Detection** (wajib `< 30%`, target `< 15%`), menghitung overlap similaritas 8-gram terhadap tugas terdahulu (wajib `< 30%`, target `< 15%`), memeriksa *burstiness* kalimat, disiplin cetak miring PUEBI, duplikasi Daftar Isi, dan kesesuaian 1-ke-1 kutipan in-text vs Daftar Pustaka. Gunakan juga `scripts/simcheck.py` dan `scripts/paraphrase_validate.py` saat memparafrasekan segmen ODT secara massal, serta `scripts/crossref_search.py`, `scripts/s2_search.py`, dan `scripts/resolve_papers.py` untuk memverifikasi metadata DOI/jurnal.
 - **Bila dijalankan di Web AI/LLM (Claude Web / Gemini Web)**:
   - Gunakan fitur **Web Search / Web Fetch** bawaan untuk memverifikasi setiap artikel jurnal, DOI, regulasi, dan data statistik sebelum menulis.
   - Bila *Code Execution / Python sandbox* tersedia di web, jalankan `scripts/ut_audit.py` pada draf; bila tidak tersedia, jalankan pemeriksaan manual menggunakan daftar periksa di bagian "Standar Anti-Slop" dan "Gerbang Pemeriksaan Akhir".
@@ -206,22 +206,26 @@ Slop adalah tulisan generik yang terdengar akademik tetapi tidak membawa informa
 - Penjelasan konsep umum yang tidak dipakai kembali dalam argumen, serta pemanjangan semata untuk mengejar jumlah karakter. Bila ada batas panjang minimal, penuhi dengan data, analisis, dan pembandingan sumber.
 - Klaim kesenjangan yang tidak ditopang jejak penelusuran dan baris matriks sintesis.
 
-**B. Daftar pantauan gaya** (heuristik praktis; analisis abstrak PubMed oleh Kobak et al. (2025) menemukan kata Inggris seperti *delves*, *showcasing*, dan *underscores* melonjak frekuensinya sejak LLM tersedia)
-- **Pembuka klise (*Throat-clearing openers*)**: "Di era digital yang semakin berkembang pesat", "Dalam era globalisasi dan Revolusi Industri 4.0", "Seiring dengan perkembangan teknologi", "Tidak dapat dipungkiri", "Perlu dicatat bahwa", "Penting untuk diingat", "dalam lanskap yang terus berkembang".
-- **Kata hiasan tanpa muatan (*Puffery*)**: *krusial, esensial, holistik, komprehensif, transformatif, revolusioner, sinergi, peran sentral, garda terdepan, menyelami, mengungkap lanskap, memanfaatkan secara optimal*. Pakai hanya bila bermakna teknis dan didukung sumber.
-- **Pola struktur mekanis**: tiga serangkai (*rule of three*) di hampir setiap kalimat, kontras biner *"bukan hanya ..., melainkan juga ..."* atau *"tidak sekadar ..., tetapi juga ..."* berulang, *"Dengan demikian, dapat disimpulkan"* menutup setiap paragraf, paragraf penutup yang mengulang paragraf sebelumnya, tanda pisah (*em-dash* `—`) berlebihan (maksimal 1 per paragraf bila sangat diperlukan, lebih baik gunakan koma atau tanda kurung), kalimat pembuka paragraf yang seragam, panjang kalimat yang seragam (*low burstiness*), urutan "pertama, kedua, ketiga" yang mekanis, *hedging* bertumpuk ("mungkin dapat berpotensi").
+**B. Daftar pantauan gaya & pemicu DrillBit AI Detection** (heuristik praktis; analisis abstrak PubMed oleh Kobak et al. (2025) serta kalibrasi laporan *DrillBit AI Content Detection* menunjukkan empat dimensi pemicu utama: *flow of writing*, *composition pattern*, *word prioritisation*, dan *layout regularity*)
+- **Pembuka klise (*Throat-clearing openers*)**: "Di era digital yang semakin berkembang pesat", "Dalam era globalisasi dan Revolusi Industri 4.0", "Seiring dengan perkembangan teknologi", "Tidak dapat dipungkiri", "Perlu dicatat bahwa", "Penting untuk diingat", "dalam lanskap yang terus berkembang", "Mencermati kompleksitas problematika tersebut", "Sebagai respons evolusioner terhadap", "Berbanding terbalik dengan".
+- **Kata hiasan tanpa muatan (*Puffery*) & verba retoris pemicu DrillBit**: *krusial, esensial, holistik, komprehensif, transformatif, revolusioner, sinergi, peran sentral, garda terdepan, menyelami, mengungkap lanskap, memanfaatkan secara optimal*, serta klausa pelaporan retoris *"menegaskan bahwa"*, *"membuktikan bahwa"*, *"menggarisbawahi bahwa"*, *"kendati demikian"*, dan *"namun demikian"*. Pakai verba laporan netral (*menunjukkan*, *mencatat*, *melaporkan*, *menguraikan*) atau konstruksi pasif.
+- **Kepadatan sintaksis terjemahan Inggris SVO aktif-transitif (`me-...-kan`), adverbia `secara`, dan kopula `merupakan`**:
+  - **Batas `me-...-kan/-i` < 30,0 per 1.000 kata**: teks AI yang ditandai DrillBit rata-rata memiliki kepadatan verba aktif transitif `me-...-kan` 44,5/1.000 kata akibat pola `[Subjek abstrak] + me-...-kan + [objek]`. Ubah sebagian kalimat menjadi bentuk pasif (`di-...-kan` / `ter-`), klausa nominal, atau pembuka preposisional (*Di tingkat...*, *Pada ranah...*, *Dari sisi...*, *Lewat skema...*).
+  - **Batas `secara <adjektiva>` < 6,0 per 1.000 kata**: teks AI DrillBit rata-rata memuat `secara` 11,4/1.000 kata (*secara langsung*, *secara mandiri*, *secara eksplisit*, *secara konsisten*, *secara mutlak*). Pangkas kata `secara` yang mubazir (*secara langsung* → *langsung*, *secara mandiri* → *mandiri*, *secara eksplisit* → *tegas*).
+  - **Batas kopula `merupakan` < 1,0 per 1.000 kata**: variasikan dengan *adalah*, *ialah*, *menjadi*, atau tanda baca langsung.
+- **Pola struktur mekanis & keseragaman daftar (*Layout Regularity*)**: tiga serangkai (*rule of three*) di hampir setiap kalimat, kontras biner *"bukan hanya ..., melainkan juga ..."*, *"tidak sekadar ..., tetapi juga ..."*, atau *"bukan semata-mata ..."* berulang, *"Dengan demikian, dapat disimpulkan"* menutup setiap paragraf, tanda pisah (*em-dash* `—`) berlebihan (maksimal 1 per paragraf bila sangat diperlukan, lebih baik gunakan koma atau tanda kurung), serta **butir daftar berurutan (`1., 2., 3.` atau `a., b., c.`) yang dibuka dengan kata kerja/kopula identik setelah titik dua** (mis. semua butir diawali `Merupakan...`, `Mengevaluasi...`, `Menyediakan...`, atau `Tahap pertama adalah... Tahap kedua adalah...`). Variasikan struktur kalimat pembuka pada setiap butir daftar.
 - **Format yang tidak lazim pada naskah ilmiah**: butir dalam prosa, huruf tebal (**bold**) untuk penekanan di tengah kalimat badan teks, emoji.
 - **Teks meta**: "Berikut adalah", "Tentu, ini draf", catatan untuk pengguna di dalam dokumen, *placeholder* berkurung siku, dan sisa instruksi.
 
-**C. Kaidah positif**
+**C. Kaidah positif & pemutus ritme (*Intra-Paragraph Burstiness*)**
 - Satu paragraf memuat satu klaim, buktinya (sitasi atau data), dan kaitannya dengan masalah penelitian. Kalimat pertama menyatakan klaim, bukan pengantar umum.
 - Gunakan nama diri, angka, tahun, lokasi, dan istilah teknis yang konkret, serta kata kerja spesifik (mengukur, membandingkan, mengklasifikasikan, memetakan).
-- **Variasikan panjang kalimat (*Burstiness*)**: campurkan kalimat pendek yang lugas (8–12 kata) dengan kalimat analitis kompleks (20–30 kata) agar standar deviasi panjang kalimat per paragraf ≥ 3,0 kata.
+- **Injeksi Kalimat Pendek Pemutus Ritme (*DrillBit Burstiness Rule*)**:84,4% paragraf yang ditandai biru oleh DrillBit adalah paragraf ≥ 3 kalimat yang **seluruh kalimatnya berukuran sedang-panjang (≥ 16 kata)** tanpa satu pun kalimat pendek. Oleh karena itu, **pada setiap paragraf prosa ≥ 3 kalimat (≥ 60 kata), wajib ada minimal satu kalimat pendek lugas (6–13 kata)** yang diselingkan dengan kalimat analitis panjang (25–38 kata), sehingga `min_sent <= 13` atau koefisien variasi panjang kalimat (`CV = SD / rata-rata`) ≥ 0,36.
 - Sesuaikan kekuatan klaim dengan kekuatan bukti ("menunjukkan" untuk temuan langsung, "mengindikasikan" untuk dukungan tidak langsung) dan sebut keterbatasan sumber.
 - Tulis dari sudut penelitian ini: objek, lokasi, dan keputusan metodologis yang dipilih mahasiswa.
 
 **D. Pemindaian sebelum menyerahkan**
-Jalankan skrip bawaan `python3 scripts/ut_audit.py <berkas.odt|.md>` (atau pindai manual terhadap daftar B bila tanpa terminal), tulis ulang kalimat yang terkena, dan terapkan uji tukar topik pada setiap paragraf pembuka subbab.
+Jalankan skrip bawaan `python3 scripts/ut_audit.py <berkas.odt|.md> [--ref Tugas1.odt Tugas2.odt Tugas3.odt]` (atau pindai manual terhadap daftar B dan C bila tanpa terminal), tulis ulang paragraf yang terkena peringatan `[DRILLBIT-AI ...]`, `[SLOP/META ...]`, atau `[SIMILARITAS ...]`, dan pastikan estimasi skor DrillBit AI maupun similaritas berada **di bawah 30%** (target utama **< 15%**).
 
 ## Daftar Periksa Kualitas & Pelajaran dari Evaluasi Penilai (Lintas Disiplin)
 Bagian ini merangkum pola temuan penilai agar tidak terulang di tugas atau proposal mana pun, dan dapat diperbarui setiap kali pengguna membagikan hasil penilaian dosen/pembimbing:
@@ -268,25 +272,31 @@ Bagian ini merangkum pola temuan penilai agar tidak terulang di tugas atau propo
 
 ## Gerbang Pemeriksaan Akhir
 Jalankan seluruh butir berikut sebelum menyerahkan hasil, lalu laporkan ringkasannya di chat:
-1. **Jalankan Skrip Audit Mandiri** (bila Python tersedia):
+1. **Jalankan Skrip Audit Mandiri & Estimasi DrillBit (< 30%)** (bila Python tersedia):
    ```bash
-   python3 scripts/ut_audit.py <berkas.odt|.md>
+   python3 scripts/ut_audit.py <berkas.odt|.md> [--ref Tugas1.odt Tugas2.odt Tugas3.odt]
    ```
+   Pastikan `[ESTIMASI SKOR DRILLBIT AI]` berada **di bawah 30%** (target utama `< 15%`), `[ESTIMASI SIMILARITAS 8-GRAM]` (bila memparafrasekan dari draf/tugas sebelumnya) berada **di bawah 30%** (target `< 15%`), serta 0 temuan pada `[DRILLBIT-AI BURSTINESS]`, `[DRILLBIT-AI DENSITY]`, dan `[DRILLBIT-AI LAYOUT]`.
 2. Sitasi dan Daftar Pustaka berpadanan satu-satu (tidak ada sitasi in-text dengan tahun/penulis yang berbeda dari Daftar Pustaka, dan tidak ada entri Daftar Pustaka yang tidak dikutip).
 3. Setiap referensi lolos gerbang verifikasi dan Tabel Verifikasi Sumber sudah disajikan.
 4. Setiap angka bersumber, mencantumkan tahun data, dan sumbernya tertulis di bawah tabel atau data.
 5. Rantai konsistensi isi berpadanan satu-satu dan berurutan sama.
 6. Daftar Isi sinkron; PDF hasil ekspor sudah diperiksa halaman demi halaman tanpa heading `DAFTAR ISI` ganda atau cacat tata letak.
 7. Seluruh istilah asing bercetak miring sesuai daftar kerja; nama diri tidak dimiringkan.
-8. Pemindaian anti-slop dan uji tukar topik selesai tanpa temuan tersisa; tidak ada teks meta atau *placeholder*.
+8. Pemindaian anti-slop, de-AI DrillBit (< 30%), dan uji tukar topik selesai tanpa temuan tersisa; tidak ada teks meta atau *placeholder*.
 9. Identitas cover memakai titik dua yang sejajar; font serif dipakai bila format ODT/ODS/MS365 diminta.
 10. Laporan ke mahasiswa memuat bagian yang masih berpotensi mengurangi skor dan hal yang harus ia verifikasi sendiri: membuka setiap tautan, membaca bagian yang dikutip, memahami isi naskah, dan mengikuti ketentuan penggunaan AI mata kuliah.
 
-## Ketentuan Anti-Plagiarisme
-Proposal Tugas 4 wajib melalui cek similaritas sebelum diunggah ulang, sehingga seluruh tugas (1-4) harus disusun dengan disiplin anti-plagiarisme sejak awal:
-- **Parafrase wajib**: setiap gagasan yang diambil dari sumber literatur harus ditulis ulang dengan kalimat sendiri, bukan menyalin-tempel dari jurnal, artikel, atau buku sumber.
-- **Sitasi konsisten**: setiap klaim, data, teori, atau temuan yang bukan pemikiran orisinal penulis wajib disertai sitasi APA Style in-text `(Penulis, Tahun)`.
-- **Hindari self-plagiarism**: jika mahasiswa memiliki tugas atau tulisan lain dengan topik serupa, bagian yang identik tidak boleh disalin ulang tanpa parafrase dan sitasi ke tulisan asalnya sendiri.
+## Ketentuan Anti-Plagiarisme & Standar Lolos Pemindaian DrillBit (< 30%)
+Proposal Tugas 4 di lingkungan Universitas Terbuka wajib melalui pemindaian **DrillBit** (baik *Similarity Checker* maupun *AI Content Detection*) dengan ambang batas kelulusan **di bawah 30%** sebelum diunggah ulang bersama Lembar Bebas Plagiasi (`MKKI - Lembar Bebas Plagiasi Metode Penelitian (<NIM>)`). Oleh karena itu, seluruh tugas (1–4) dan setiap permintaan parafrase wajib mematuhi protokol berikut:
+- **Target wajib DrillBit < 30% (Target pengaman internal < 15%)**:
+  - Baik skor *DrillBit AI Content Detection* maupun *DrillBit Similarity* harus berada di bawah 30%. Saat memparafrasekan draf yang terkena skor DrillBit ≥ 30% (atau saat menyusun proposal final Tugas 4 dari akumulasi Tugas 1–3), gunakan `scripts/odt_para.py` untuk mengekstrak seluruh segmen prosa/tabel, tulis ulang struktur kalimatnya, validasi dengan `scripts/paraphrase_validate.py`, dan audit hasil akhirnya dengan `scripts/ut_audit.py`.
+- **Parafrase struktural mendalam (bukan sekadar ganti sinonim)**:
+  - DrillBit menandai rangkaian kata berurutan yang identik (*n-gram matching*) sekaligus pola struktur kalimat yang seragam (*composition pattern* & *layout regularity*). Saat memparafrasekan gagasan dari literatur atau dari tugas terdahulu, balik urutan klausa (anak kalimat ↔ induk kalimat), ubah kalimat aktif transitif (`me-...-kan`) menjadi pasif (`di-...-kan`/`ter-`) atau pembuka preposisional, pecah kalimat panjang, dan pastikan overlap 6-gram/8-gram terhadap naskah asal `< 15%`.
+- **Disiplin Burstiness & Anti-Pola-AI DrillBit**:
+  - Setiap paragraf prosa ≥ 3 kalimat (≥ 60 kata) wajib memiliki minimal satu kalimat pendek lugas (6–13 kata) di antara kalimat analitis panjang (`min_sent <= 13` atau `CV >= 0.36`), menjaga kepadatan `secara` `< 6,0/1.000 kata`, `merupakan` `< 1,0/1.000 kata`, dan `me-...-kan` `< 30,0/1.000 kata`, serta memvariasikan kata pembuka setelah titik dua pada daftar berpoin.
+- **Sitasi konsisten**: setiap klaim, data, teori, atau temuan yang bukan pemikiran orisinal penulis wajib disertai sitasi APA Style in-text `(Penulis, Tahun)` yang tetap melekat pada klaimnya meskipun struktur kalimatnya diparafrasekan.
+- **Hindari *self-plagiarism* lintas tugas**: jika mahasiswa memiliki tugas atau tulisan lain dengan topik serupa (termasuk Tugas 1–3 yang diintegrasikan ke Tugas 4), lakukan parafrase struktural menyeluruh agar tidak memicu skor similaritas repositori mahasiswa (*Student Papers*) di DrillBit.
 - **Variasi sumber**: kajian pustaka menyintesis beberapa sumber sekaligus (bukan merangkai satu sumber demi satu sumber).
 - **Data dan tabel**: cantumkan sumber secara eksplisit di bawah data/tabel tersebut, bukan hanya di Daftar Pustaka.
 - **Bukan keluaran chatbot**: keluaran AI tidak dikutip sebagai sumber fakta.
