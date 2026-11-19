@@ -15,7 +15,7 @@ Skill ini memandu penyusunan, revisi, verifikasi literatur, dan pemformatan doku
 ### Pustaka Referensi Bawaan (`references/`)
 - `references/drillbit-zero-ai-playbook.md` — Playbook forensik **0% DrillBit AI & 0% Similaritas** (Mode A blok-terarah vs. Mode B parafrase kumulatif, 5 pilar sintaksis, parser PDF DrillBit).
 - `references/academic-paraphrasing-and-proofreading.md` — 5 teknik parafrase struktural, 10 prinsip humanisasi akademik, katalog *Signs of AI Writing*, proofreading PUEBI/EYD & bahasa Inggris, serta kamus kata baku KBBI & istilah asing cetak miring.
-- `references/methodology-and-data-analysis.md` — Desain riset, sampling, uji statistik & *effect size*, analisis kualitatif, etika riset (UU PDP), & abstrak IMRAD.
+- `references/methodology-and-data-analysis.md` — Desain riset, 4 aras pengukuran & penskalaan, validitas/reliabilitas, sampling (Gay et al., 2012; CLT; Slovin), asumsi parametrik & uji statistik, analisis kualitatif, struktur Hasil/Diskusi/Keterbatasan/Kesimpulan, etika riset (UU PDP), & abstrak IMRAD.
 - `references/citation-and-submission-checklist.md` — Templat sitasi APA 7th, IEEE, Chicago, Harvard, MLA, verifikasi DOI anti-halusinasi, audit sitasi 1-ke-1, & daftar periksa pra-kumpul UT.
 - `references/script-craft.md` & `references/timing-and-cuts.md` — Panduan penyusunan naskah bicara dan pengaturan durasi video demonstrasi (~130 WPM).
 - `references/llm-tells.md`, `references/hedging-and-claims.md`, `references/overclaiming-rules.md`, `references/verification-sources.md`, `references/diagnosis-patterns.md`.
@@ -124,6 +124,10 @@ Setiap klaim wajib merujuk langsung pada artefak, data, perhitungan, konfigurasi
    - Untuk analisis kasus hukum, gunakan silogisme hukum (*isu hukum → aturan/peraturan perundang-undangan sesuai hierarki norma → analisis fakta → kesimpulan*) dengan merujuk pasal dan nomor peraturan yang terverifikasi (UU, PP, Perpres, Putusan MA/MK). Untuk kebijakan publik, sosiologi, atau komunikasi, hubungkan teori kanonik ke data empiris dan dokumen kebijakan resmi.
 5. **Keguruan & Ilmu Pendidikan (FKIP)**:
    - Untuk tugas praktik mengajar, RPP/Modul Ajar (Kurikulum Merdeka / K-13), Penelitian Tindakan Kelas (PTK), atau evaluasi pembelajaran, sesuaikan dengan capaian pembelajaran (CP/ATP), karakteristik peserta didik pada kasus, rubrik asesmen nyata, dan regulasi Kemendikbudristek/BSKAP yang berlaku.
+6. **Kaidah Penyajian Hasil, Pembahasan, Keterbatasan, & Kesimpulan Laporan Praktikum / Tugas Analitis** *(diadaptasi dari metodologi pelaporan ilmiah UT di `references/methodology-and-data-analysis.md`)*:
+   - **Pisahkan Hasil Aktual vs. Pembahasan**: sajikan data pengujian, log CLI, peta, atau tabel perhitungan secara objektif terlebih dahulu (atau bergantian per langkah verifikasi), lalu bahas *mengapa* hasil tersebut terjadi—termasuk menjelaskan secara jujur bila ada uji yang gagal, anomali, atau hasil yang menyimpang dari dugaan awal—dengan merujuk kembali ke teori/BMP.
+   - **Ketepatan Pengukuran & Statistika**: untuk tugas/praktikum yang mengolah data survei, kuesioner, atau uji statistik, pastikan kesesuaian **aras pengukuran** (*nominal, ordinal, interval, rasio*) dan **asumsi normalitas/parametrik** sebelum memilih rumus atau uji statistik; jelaskan sebaran data (*simpang baku*), bukan hanya nilai rata-rata.
+   - **Keterbatasan & Kesimpulan Sintetis**: sebutkan keterbatasan lingkungan uji/data secara lugas bila relevan (mis. batasan simulator/perangkat, ukuran sampel, atau umur data), dan susun **Kesimpulan** sebagai **sintesis** yang menjawab setiap tujuan/langkah praktikum dengan dukungan angka/bukti kunci—bukan sekadar mengulang kalimat pada bagian hasil.
 
 ### Mode C: Naskah Bicara & Panduan Rekaman Video Demonstrasi (Self-Contained `write-talk-script`)
 Gunakan ketika tugas praktikum (`STSI4205`, `STSI4309`, dll.) mewajibkan pembuatan video penjelasan/demonstrasi:
@@ -237,10 +241,12 @@ Jangan pernah menyisakan kalimat pembuka/penutup asisten seperti *"Tentu, beriku
      - *Keguruan & Pendidikan (FKIP)*: regulasi pendidikan (UU Sisdiknas, Permendikbudristek, panduan BSKAP), buku pedagogi/evaluasi pembelajaran, dan jurnal pendidikan (SINTA, ERIC, DOAJ).
      - *Sains, Teknik, & TI (FST)*: buku teks standar (Laudon & Laudon, Stallings & Brown, Tanenbaum & Wetherall, Kurose & Ross, Pressman, Sjafrizal), standar resmi (`IEEE`, `RFC`, `ISO/IEC`, `COBIT`, `NIST`), serta regulasi terkait (`UU Hak Cipta`, `UU ITE`, `UU PDP`).
      - *Kesehatan & Biologi*: pedoman WHO, Kemenkes, serta artikel terindeks PubMed/Scopus.
-2. **Larangan Mutlak Sitasi Fiktif**:
+2. **Evaluasi Kredibilitas & Larangan Mutlak Sitasi Fiktif**:
+   - Saring sumber eksternal menggunakan **5 kriteria kredibilitas** (*Kekinian, Relevansi, Otoritas, Akurasi, dan Tujuan*); prioritaskan jurnal/prosiding, buku teks, dan regulasi resmi dibandingkan berita populer.
    - Dilarang mengarang nama penulis, tahun terbit, judul buku/jurnal, nomor volume, atau DOI.
    - Pada mesin lokal yang terhubung ke internet, gunakan `python3 scripts/crossref_search.py "<kata kunci>"` atau `python3 scripts/s2_search.py "<kata kunci>"` bila memerlukan artikel jurnal tambahan; pada web LLM, gunakan *Web Search*.
 3. **Kesesuaian Satu-Satu In-Text & Daftar Pustaka (`## Sumber` / `## Daftar Pustaka`)**:
+   - Bedakan **sitasi langsung** (kalimat diapit tanda petik dan wajib mencantumkan nomor halaman, mis. `hlm. 45`) dengan **parafrasa** (tanpa tanda petik, nomor halaman opsional).
    - Setiap kutipan `(Penulis, Tahun)` di dalam jawaban wajib tercantum di bagian `## Sumber` atau `## Daftar Pustaka` dengan format **APA Style 7th Edition**, dan setiap entri di daftar pustaka wajib dikutip minimal satu kali di dalam jawaban.
 
 ---
