@@ -58,11 +58,18 @@ def from_markup(lead, text, ital_style):
 
 def pack(src_odt, content_xml, out_odt):
     import zipfile
-    zin = zipfile.ZipFile(src_odt)
+    new_content = open(content_xml, 'rb').read()
+    with zipfile.ZipFile(src_odt, 'r') as zin:
+        items = [
+            (it, new_content if it.filename == 'content.xml' else zin.read(it.filename))
+            for it in zin.infolist()
+        ]
     with zipfile.ZipFile(out_odt, 'w') as zout:
-        for it in zin.infolist():
-            data = open(content_xml, 'rb').read() if it.filename == 'content.xml' else zin.read(it.filename)
-            comp = zipfile.ZIP_STORED if it.filename == 'mimetype' else zipfile.ZIP_DEFLATED
+        for it, data in items:
+            if it.filename == 'mimetype' or it.filename.endswith('/'):
+                comp = zipfile.ZIP_STORED
+            else:
+                comp = it.compress_type
             zout.writestr(it, data, compress_type=comp)
 
 

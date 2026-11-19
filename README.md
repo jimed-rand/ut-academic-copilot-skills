@@ -22,19 +22,20 @@
 
 ---
 
-## Standar Lolos Pemindaian DrillBit (< 30% AI Writing & < 30% Similaritas)
+## Standar Lolos Pemindaian DrillBit (Terbukti 0% AI Writing & 0% Similaritas)
 
-Di lingkungan Universitas Terbuka (dan berbagai perguruan tinggi yang menggunakan **DrillBit Plagiarism & AI Content Detection**), naskah proposal penelitian (khususnya **Tugas 4** yang wajib dilampiri *Lembar Bebas Plagiasi*) maupun karya ilmiah harus melewati pemindaian dengan batas maksimum **di bawah 30%** — baik pada skor **AI Text Detected (%)** maupun **Similarity (%)**. Kedua skill di repositori ini dirancang dengan target pengaman internal **< 15%** melalui mekanisme berikut:
+Di lingkungan Universitas Terbuka (dan berbagai perguruan tinggi yang menggunakan **DrillBit Plagiarism & AI Content Detection**), naskah proposal penelitian (khususnya **Tugas 4** yang wajib dilampiri *Lembar Bebas Plagiasi*) maupun karya ilmiah harus melewati pemindaian dengan batas maksimum **di bawah 30%** — baik pada skor **AI Text Detected (%)** maupun **Similarity (%)**. Kedua skill di repositori ini menerapkan **metodologi forensik yang telah tervalidasi mencapai 0% AI Score dan 0% Similarity** pada pemindaian DrillBit nyata (`references/drillbit-zero-ai-playbook.md`):
 
-1. **Kalibrasi Empat Dimensi *DrillBit AI Content Detection***:
-   - **Pemutus Ritme Kalimat (*Intra-Paragraph Burstiness*)**: Mayoritas blok yang ditandai biru oleh DrillBit adalah paragraf panjang ($\ge 3$ kalimat) yang seluruh kalimatnya berukuran sedang-panjang (18–45 kata) tanpa kalimat pendek. Skill ini mewajibkan sisipan minimal satu kalimat pendek lugas (**6–13 kata**) di sela-sela kalimat analitis panjang (25–38 kata) pada setiap paragraf $\ge 60$ kata sehingga `min_sent <= 13` atau koefisien variasi panjang kalimat (`CV`) $\ge 0,36$.
-   - **Reduksi Sintaksis Terjemahan Inggris SVO (`me-...-kan`)**: Menekan kepadatan verba aktif transitif `me-...-kan/-i` di bawah **30,0 per 1.000 kata** (blok yang terdeteksi AI oleh DrillBit rata-rata mencapai ~44,5/1.000 kata) dengan mengalihkan sebagian klausa ke bentuk pasif (`di-...-kan`/`ter-`), klausa nominal, atau pembuka preposisional (*Di tingkat...*, *Pada ranah...*, *Dari sisi...*).
-   - **Pembatasan Adverbia `secara` & Kopula `merupakan`**: Menjaga kepadatan adverbia `secara <adjektiva>` **< 6,0 per 1.000 kata** dan kopula `merupakan` **< 1,0 per 1.000 kata**, serta menghapus verba pelaporan retoris khas LLM (*"menegaskan bahwa"*, *"membuktikan bahwa"*, *"menggarisbawahi bahwa"*, *"kendati demikian"*, *"namun demikian"*).
-   - **Pemecahan Keseragaman Daftar Berpoin (*Layout Regularity*)**: Mencegah butir daftar berurutan (`1., 2., 3.` atau `a., b., c.`) dibuka dengan kata kerja atau kopula yang identik setelah tanda titik dua (mis. mengulang `Merupakan...` atau `Mengevaluasi...` di setiap butir).
-2. **Parafrase Struktural & Anti-*Self-Plagiarism* Lintas Tugas (< 30% Similaritas)**:
+1. **5 Pilar Forensik 0% *DrillBit AI Content Detection***:
+   - **Sintaksis Klausa Padat Multi-Klausa (`;` / `:` / `/`) — Tanpa Injeksi Kalimat Pendek Klise**: Pengujian forensik pada laporan PDF DrillBit membuktikan bahwa menyisipkan kalimat pendek deklaratif buatan (6–13 kata) justru **menaikkan** skor AI. Sebagai gantinya, gagasan akademik dipadatkan dalam kalimat multi-klausa (35–65 kata) dengan titik koma (`;`), titik dua (`:`), dan pasangan istilah teknis (`server-to-server / S2S`, `CPU/RAM`, `OMEMO/OTR`).
+   - **Pemutus Rangkaian Titik-Spasi Akademik & Regulasi Alami**: DrillBit memecah aliran teks pada setiap titik diikuti spasi (`(?<=[.!?])\s+`) dan baru memicu blok biru AI ketika terdapat $\ge 6$ kalimat polos berturut-turut ($\ge 139$ kata). Setiap paragraf dijangkarkan dengan rujukan autentik berformat baku (`UU No. 27 Tahun 2022`, `PP No. 71 Tahun 2019`, `RFC No. 6120`, `XEP No. 0384`, sitasi APA 7th `Author et al. (Tahun)`, inisial pakar kanonik, serta `mis.` / `s.d.` / `hlm.`) agar rangkaian kalimat polos tetap $\le 5$ kalimat (`< 139 kata`).
+   - **Definisi Daftar Titik Dua Ringkas (*Terse Colon List Definitions*)**: Butir daftar definisi konsep, variabel operasional, dan instrumen menggunakan frasa kerja/nomina aktif langsung setelah titik dua (`: Menelaah...`, `: Mengukur...`, `: Meliputi...`) dengan verba pembuka yang bervariasi antarbutir.
+   - **Nol Em-Dash (`— = 0`), Bebas Sinonim Slop, & Batas Kepadatan Leksikal**: Seluruh em-dash (`—`) diganti koma/kurung, sinonim parafrase mekanis dihindari, serta kepadatan `secara <adjektiva>` dijaga **< 6,0/1k kata**, `merupakan` **< 1,0/1k kata**, dan `me-...-kan/-i` **< 30,0/1k kata**.
+   - **Mode A (Perbaikan Blok Biru Terarah) vs. Mode B (Parafrase Kumulatif Penuh)**: Saat merevisi draf yang sudah memiliki laporan PDF DrillBit (*Mode A*), agen hanya menulis ulang paragraf yang ditandai biru AI dan **mempertahankan 100% paragraf yang sudah lolos sebagai 0% AI (Human)**.
+2. **Parafrase Struktural & Anti-*Self-Plagiarism* Lintas Tugas (0% Similaritas)**:
    - DrillBit memindai kecocokan rangkaian kata berurutan (*n-gram matching*) terhadap jurnal, internet, dan repositori tugas mahasiswa (*Student Papers*, termasuk Tugas 1–3 yang dikumpulkan sebelumnya).
-   - Saat menyusun proposal kumulatif (Tugas 4) atau memparafrasekan rujukan, skill ini menerapkan **parafrase struktural** (membalik urutan anak kalimat ↔ induk kalimat, mengubah aktif ↔ pasif, serta memecah/menggabungkan klausa) sambil mempertahankan 100% akurasi angka, tahun, nomor regulasi/standar (RFC, ISO, UU, PP), dan sitasi `(Penulis, Tahun)`.
-   - Skrip `ut_audit.py --ref`, `simcheck.py`, `odt_para.py`, dan `paraphrase_validate.py` menyediakan pemeriksaan lokal otomatis sebelum dokumen diunggah ke LMS/DrillBit.
+   - Saat menyusun proposal kumulatif (Tugas 4) atau memparafrasekan rujukan (*Mode B*), skill ini menerapkan **5 teknik parafrase struktural** (`references/academic-paraphrasing-and-proofreading.md`) sambil mempertahankan 100% akurasi angka, tahun, nomor regulasi/standar (RFC, ISO, UU, PP), dan sitasi `(Penulis, Tahun)`.
+   - Skrip `ut_audit.py --ref`, `simcheck.py`, `odt_para.py` (aman untuk *in-place packing* & menjaga integritas `Pictures/*` + `META-INF/manifest.xml`), dan `paraphrase_validate.py` menyediakan pemeriksaan lokal otomatis sebelum dokumen diunggah ke LMS/DrillBit.
 
 ---
 
@@ -47,8 +48,12 @@ Setiap folder skill bersifat mandiri (*self-contained*, *zero-dependency* Python
    - **Audit Tulisan, Anti-Slop, & Kepatuhan DrillBit (< 30% AI & Similaritas)**: `ut_audit.py` (audit PUEBI italic, sitasi APA 1-ke-1, *burstiness* kalimat, kepadatan sintaksis SVO/`secara`/`merupakan`, estimasi skor *DrillBit AI Content Detection*, dan cek similaritas `--ref`), `simcheck.py`, `paraphrase_validate.py`, `odt_para.py`, `prose_lint.py`, `ai_detector.py`, `text_analyzer.py`, `terminology_check.py`, `claim_audit.py`, `outline_extract.py`.
    - **Verifikasi Literatur & Sitasi Nyata**: `crossref_search.py`, `s2_search.py`, `arxiv_search.py`, `dblp_search.py`, `resolve_papers.py`, `resolve_oa.py`, `check_bibtex.py`, `polite_http.py`.
    - **Utilitas Tambahan** *(khusus `penjawab-tugas-akademik-ut`)*: `script_timer.py` & `word_budget.py` (pengatur durasi naskah video demonstrasi), serta `pt9.py` (pembaca/penulis berkas `.pkt`/`.pka` Cisco Packet Tracer 9).
-3. **`references/`** — Dokumen acuan yang dibaca agen saat mengaudit naskah:
-   - `llm-tells.md`, `hedging-and-claims.md`, `overclaiming-rules.md`, `verification-sources.md`, `diagnosis-patterns.md` (dan `script-craft.md`, `timing-and-cuts.md` pada `penjawab-tugas-akademik-ut`).
+3. **`references/`** — Pustaka panduan akademik mandiri (*self-contained copies*) yang dibaca agen saat menyusun dan mengaudit naskah di kedua skill:
+   - `drillbit-zero-ai-playbook.md` — Playbook forensik **0% DrillBit AI & 0% Similaritas** (Mode A blok-terarah vs. Mode B parafrase kumulatif, 5 pilar sintaksis, parser PDF DrillBit).
+   - `academic-paraphrasing-and-proofreading.md` — 5 teknik parafrase struktural, 10 prinsip humanisasi akademik, katalog *Signs of AI Writing*, proofreading PUEBI/EYD & bahasa Inggris, serta kamus kata baku KBBI & istilah asing cetak miring.
+   - `methodology-and-data-analysis.md` — Paradigma & desain penelitian, sampling, sintesis literatur & 5 tipe *research gap*, uji statistik & *effect size*, analisis kualitatif (Miles-Huberman-Saldaña, Braun & Clarke, Lincoln & Guba), etika riset (UU PDP), & abstrak IMRAD.
+   - `citation-and-submission-checklist.md` — Templat sitasi APA 7th, IEEE, Chicago, Harvard, MLA, protokol verifikasi DOI anti-halusinasi, audit sitasi 1-ke-1, & daftar periksa pra-kumpul UT.
+   - `llm-tells.md`, `hedging-and-claims.md`, `overclaiming-rules.md`, `verification-sources.md`, `diagnosis-patterns.md`, `script-craft.md`, `timing-and-cuts.md`.
 
 ---
 

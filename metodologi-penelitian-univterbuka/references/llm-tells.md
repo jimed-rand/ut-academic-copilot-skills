@@ -16,6 +16,7 @@ And a tell that is also a domain term is innocent — see
 - [Formatting tells](#formatting-tells)
 - [False positives and domain-term exceptions](#false-positives-and-domain-term-exceptions)
 - [Worked rewrites](#worked-rewrites)
+- [Indonesian academic prose & DrillBit AI tells](#indonesian-academic-prose--drillbit-ai-tells)
 - [What "fixed" means](#what-fixed-means)
 
 ## How to use this catalog
@@ -166,6 +167,20 @@ Before/after pairs (synthetic, written for this repo):
 
 Notice what did NOT change in any pair: the numbers, the mechanism, the
 claim. If your rewrite reads better but says more (or less), it is wrong.
+
+## Indonesian academic prose & DrillBit AI tells
+
+For Universitas Terbuka (UT) assignments in Bahasa Indonesia evaluated by **DrillBit AI Content Detection** and **DrillBit Similarity**, see the complete ground-truth engineering guide in [drillbit-zero-ai-playbook.md](drillbit-zero-ai-playbook.md) and [academic-paraphrasing-and-proofreading.md](academic-paraphrasing-and-proofreading.md). High-frequency Indonesian LLM tells caught by `scripts/ut_audit.py`:
+
+| Tell | Threshold / Pattern | Remediation |
+|---|---|---|
+| **Unbroken 6+ sentence AI runs** | $\ge 6$ consecutive raw `(?<=[.!?])\s+` sentences ($\ge 139$ words) without a $\le 5$-word period-space split | Consolidate into 35–65 word semicolon/colon sentences anchored with natural `No.`, `et al.`, `mis.`, `s.d.`, or scholar initials (`max_unbroken_run <= 4`). **Never** inject artificial 6–13 word LLM signpost sentences. |
+| **Em-dashes (`—`)** | `>= 1` in Indonesian prose | Replace every `—` with commas, parentheses, colons, or semicolons (`— = 0`). |
+| **`secara <adjektiva>` inflation** | `>= 6.0 / 1,000 words` | Convert to concrete verbs or prepositional mechanisms (`< 2.5 / 1,000 words`). |
+| **`merupakan` copula inflation** | `>= 1.0 / 1,000 words` | Replace with direct active verbs or terse colon definitions (`: Menelaah...`). |
+| **`me-...-kan` chain density** | `>= 30.0 / 1,000 words` | Vary with active/passive balance and concise verbal clauses. |
+| **AI-paraphraser slop words** | Overuse of *sanggup*, *obrolan*, *pemakai*, *kawakan*, *paguyuban*, *simpul*, *alur*, *justru*, *ataupun* | Replace with precise disciplinary Bahasa Indonesia terms (*mampu*, *percakapan*, *pengguna/administrator*, *komunitas teknis*). |
+| **Parallel list verb cloning** | 3+ sibling list items starting with the exact same verb (`: Mengkaji...`, `: Mengkaji...`, `: Mengkaji...`) | Use terse colon definitions with distinct opening verbs per item (`: Menelaah...`, `: Mengukur...`, `: Menguji...`, `: Memetakan...`). |
 
 ## What "fixed" means
 

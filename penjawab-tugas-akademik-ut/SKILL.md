@@ -12,6 +12,14 @@ Skill ini memandu penyusunan, revisi, verifikasi literatur, dan pemformatan doku
 > - Bila pengguna mengetik kode pintas `B1E2P3-<KODE_MK>`, `A1B2C3-<KODE_MK>`, atau `A2B4C6-<KODE_MK>`, jalankan perintah tersimpan pada **Bagian 4** terlebih dahulu; aturan Bagian 4 mengatur batas karakter, struktur artefak, dan format keluaran sesuai peruntukan masing-masing kode.
 > - Khusus untuk penyusunan **Proposal Penelitian Bab I–IV/V** (mata kuliah Metodologi Penelitian, Karya Ilmiah/Karil, atau Tugas Akhir seperti `STSI4310`, `MSIM4312`, `EKMA4367`, `HKUM4306`, `IDIK4007`, dll.), gunakan skill `metodologi-penelitian-univterbuka`.
 
+### Pustaka Referensi Bawaan (`references/`)
+- `references/drillbit-zero-ai-playbook.md` — Playbook forensik **0% DrillBit AI & 0% Similaritas** (Mode A blok-terarah vs. Mode B parafrase kumulatif, 5 pilar sintaksis, parser PDF DrillBit).
+- `references/academic-paraphrasing-and-proofreading.md` — 5 teknik parafrase struktural, 10 prinsip humanisasi akademik, katalog *Signs of AI Writing*, proofreading PUEBI/EYD & bahasa Inggris, serta kamus kata baku KBBI & istilah asing cetak miring.
+- `references/methodology-and-data-analysis.md` — Desain riset, sampling, uji statistik & *effect size*, analisis kualitatif, etika riset (UU PDP), & abstrak IMRAD.
+- `references/citation-and-submission-checklist.md` — Templat sitasi APA 7th, IEEE, Chicago, Harvard, MLA, verifikasi DOI anti-halusinasi, audit sitasi 1-ke-1, & daftar periksa pra-kumpul UT.
+- `references/script-craft.md` & `references/timing-and-cuts.md` — Panduan penyusunan naskah bicara dan pengaturan durasi video demonstrasi (~130 WPM).
+- `references/llm-tells.md`, `references/hedging-and-claims.md`, `references/overclaiming-rules.md`, `references/verification-sources.md`, `references/diagnosis-patterns.md`.
+
 ---
 
 ## 0. Prinsip Utama & Kepatuhan Etika Penggunaan AI (UT & Perguruan Tinggi)
@@ -189,16 +197,19 @@ Jangan pernah menyisakan kalimat pembuka/penutup asisten seperti *"Tentu, beriku
 | *"Dengan demikian, dapat disimpulkan bahwa..."* / *"Secara keseluruhan..."* di akhir tiap paragraf | Kalimat penutup satu baris yang hanya mengulang kalimat sebelumnya | Hapus kalimat simpulan repetitif; biarkan paragraf berhenti pada bukti, contoh konkret, atau implikasi operasional terakhir. |
 | *Em-dash* (`—`) berulang, **huruf tebal** di tengah kalimat prosa, atau *rule of three* (tiga kata sifat berurutan di tiap kalimat) | Tanda baca dan ritme sintaksis seragam khas generator teks | Gunakan koma, titik, atau tanda kurung biasa; jangan menebalkan kata di badan paragraf; variasikan struktur klausa. |
 
-### C. Kaidah Positif Penulisan Manusiawi & Standar Lolos DrillBit (< 30% AI & Similaritas)
-1. **Variasi Ritme Kalimat & Pemutus Ritme (*DrillBit Burstiness Rule*)**:
-   - Berdasarkan kalibrasi laporan *DrillBit AI Content Detection*, 84,4% paragraf yang ditandai sebagai teks AI adalah paragraf ≥ 3 kalimat yang seluruh kalimatnya berukuran sedang-panjang (≥ 16 kata) tanpa kalimat pendek.
-   - Oleh karena itu, **pada setiap paragraf prosa ≥ 3 kalimat (≥ 60 kata), wajib ada minimal satu kalimat pendek yang tegas (6–13 kata)** yang diselingkan dengan kalimat analitis bermuatan teknis (20–35 kata), sehingga `min_sent <= 13` atau koefisien variasi panjang kalimat (`CV = SD / rata-rata`) ≥ 0,36.
-2. **Reduksi Sintaksis Terjemahan Inggris SVO (`me-...-kan`), Adverbia `secara`, & Kopula `merupakan`**:
-   - **Batas verba aktif transitif `me-...-kan/-i` < 30,0 per 1.000 kata**: hindari pola monoton `[Subjek abstrak] + me-...-kan + [objek]` (*menunjukkan*, *menegaskan*, *membuktikan*, *menghadirkan*, *memungkinkan*, *melahirkan*, *menggarisbawahi*). Ubah sebagian kalimat ke konstruksi pasif (`di-...-kan` / `ter-`), klausa nominal, atau pembuka preposisional (*Di tingkat...*, *Pada ranah...*, *Dari sisi...*).
-   - **Batas adverbia `secara <adjektiva>` < 6,0 per 1.000 kata** (*secara langsung* → *langsung*, *secara mandiri* → *mandiri*, *secara eksplisit* → *tegas*) dan **kopula `merupakan` < 1,0 per 1.000 kata** (variasikan dengan *adalah*, *ialah*, *menjadi*).
-   - **Variasi Pembuka Daftar Berpoin (*Layout Regularity*)**: jangan mengawali butir daftar berurutan (`1., 2., 3.` atau `a., b., c.`) dengan kata kerja atau kopula yang sama setelah titik dua (`Merupakan...`, `Mengevaluasi...`, `Menyediakan...`).
-3. **Parafrase Struktural Mendalam (Target Similaritas & AI DrillBit < 30%, Target Pengaman < 15%)**:
-   - Saat memparafrasekan materi BMP, artikel jurnal, atau draf tugas sebelumnya, jangan sekadar mengganti sinonim kata per kata. Balik urutan klausa (anak kalimat ↔ induk kalimat), ubah aktif ↔ pasif, pecah atau gabungkan kalimat, dan pastikan overlap 8-gram terhadap naskah asal `< 15%` agar lolos pemindaian **DrillBit** jauh di bawah ambang **30%**.
+### C. Kaidah Positif Penulisan Manusiawi & Standar Lolos DrillBit (Terbukti 0% AI & 0% Similaritas)
+*(Lihat detail lengkap di `references/drillbit-zero-ai-playbook.md` dan `references/academic-paraphrasing-and-proofreading.md`)*
+1. **Sintaksis Klausa Padat + Pemutus Titik-Spasi Akademik Alami (LARANGAN Injeksi Kalimat Pendek Klise 6–13 Kata)**:
+   - DrillBit memecah aliran teks pada setiap titik diikuti spasi (`(?<=[.!?])\s+`) dan menandai blok biru AI bila terdapat rangkaian $\ge 6$ kalimat polos berturut-turut ($\ge 139$ kata). Menyisipkan kalimat pendek deklaratif klise 6–13 kata justru memperpanjang blok AI.
+   - Sebaliknya, padatkan gagasan terkait ke dalam kalimat analitis multi-klausa (35–65 kata) dengan titik koma (`;`), titik dua (`:`), dan pasangan istilah teknis (`/`), serta jangkarkan rujukan titik-spasi autentik (`UU No.`, `PP No.`, `RFC No.`, `Author et al. (Tahun)`, `mis.`, `s.d.`, inisial pakar) sehingga rangkaian kalimat polos tetap $\le 5$ kalimat (`< 139 kata`).
+   - Pada daftar berpoin atau definisi konsep (`1.`, `a.`), gunakan definisi titik dua ringkas (`: Menelaah...`, `: Mengukur...`, `: Meliputi...`) dengan variasi verba pembuka di setiap butir.
+2. **Nol Em-Dash (`— = 0`), Reduksi Sintaksis SVO (`me-...-kan`), Adverbia `secara`, & Kopula `merupakan`**:
+   - Hapus seluruh tanda pisah em-dash (`—`) dan ganti dengan koma, titik koma, atau kurung; hindari sinonim parafrase mekanis (*sanggup*, *obrolan*, *pemakai*, *kawakan*, *paguyuban*).
+   - **Batas verba aktif transitif `me-...-kan/-i` < 30,0 per 1.000 kata**, **adverbia `secara <adjektiva>` < 6,0 per 1.000 kata**, dan **kopula `merupakan` < 1,0 per 1.000 kata**.
+3. **Mode A (Perbaikan Terarah Laporan DrillBit) vs. Mode B (Parafrase Struktural Mendalam)**:
+   - Jika mahasiswa menyerahkan PDF laporan DrillBit AI, **hanya tulis ulang paragraf yang ditandai biru AI** dan pertahankan 100% paragraf yang sudah terbukti Human (`0% AI`).
+   - Saat memparafrasekan materi BMP, artikel jurnal, atau draf tugas sebelumnya, balik urutan klausa (anak kalimat ↔ induk kalimat), ubah aktif ↔ pasif, padatkan klausa dengan `;`/`:`, dan pastikan overlap 8-gram terhadap naskah asal `< 15%`.
+   - Rujuk panduan lengkap di `references/methodology-and-data-analysis.md` (metodologi, analisis data, & etika riset) serta `references/citation-and-submission-checklist.md` (format APA 7th/IEEE/Chicago/Harvard/MLA, verifikasi DOI, & daftar periksa pra-kumpul).
 4. **Uji Tukar Topik (*Portability Test*)**: Jika sebuah kalimat tetap terdengar cocok saat dipindahkan ke jawaban mata kuliah lain hanya dengan mengganti kata benda utamanya (misal: *"Penerapan kerangka ini meningkatkan efisiensi dan efektivitas organisasi secara signifikan"*), kalimat tersebut adalah *slop*. Ganti dengan mekanisme spesifik dari kasus soal.
 5. **Kalibrasi Klaim & Hedging (Aturan `verify-claims`)**:
    - Jangan gunakan kata *signifikan* kecuali merujuk pada uji statistik atau angka selisih yang terukur.

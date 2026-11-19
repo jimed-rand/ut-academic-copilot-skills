@@ -11,12 +11,13 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 """Validate paraphrased segments against original for BOTH:
-1. DrillBit Similarity (< 30% target -> < 8% 6-gram overlap against original)
-2. DrillBit AI Content Detection (< 30% target -> burstiness CV, short sentence injection,
-   low me-...-kan / secara / merupakan density, no parallel list verb cloning).
+1. DrillBit Similarity (< 30% target -> < 15% 6-gram overlap against original)
+2. DrillBit AI Content Detection (0% AI target -> raw (?<=[.!?])\\s+ unbroken
+   sentence runs <= 4 sentences / < 130 words, 0 em-dashes, low me-...-kan /
+   secara / merupakan density, no AI-paraphraser slop words).
 3. Factual & formatting integrity (IDs, list labels, numbers, citations, balanced *italics*).
 """
-import json, re, sys, statistics
+import json, re, sys
 
 o = json.load(open(sys.argv[1], encoding='utf-8'))
 n = json.load(open(sys.argv[2], encoding='utf-8'))
@@ -87,15 +88,23 @@ for a, b in zip(o, n):
     if pct > 20 and len(wb) > 15:
         probs.append(f'6-gram overlap {pct:.0f}%')
 
-    # DrillBit AI burstiness check on prose paragraphs (P15) with >= 3 sentences
-    if b['style'] == 'P15' and len(wb) >= 60:
-        sents = split_sents(B)
-        if len(sents) >= 3:
-            lens = [len(s.split()) for s in sents]
-            mn = min(lens)
-            cv = statistics.stdev(lens) / max(1, statistics.mean(lens))
-            if mn > 15 and cv < 0.36:
-                probs.append(f'low burstiness (min_sent={mn}w, CV={cv:.2f}, lens={lens})')
+    if '—' in B:
+        probs.append('contains em-dash (—)')
+
+    # Ground-truth DrillBit raw (?<=[.!?])\s+ unbroken run check per segment
+    raw_sents = [s.strip() for s in re.split(r'(?<=[.!?])\s+', B) if s.strip()]
+    max_rs = max_rw = cur_rs = cur_rw = 0
+    for rs in raw_sents:
+        wc = len(rs.split())
+        if wc <= 5:
+            cur_rs = cur_rw = 0
+        else:
+            cur_rs += 1
+            cur_rw += wc
+            if cur_rs > max_rs or (cur_rs == max_rs and cur_rw > max_rw):
+                max_rs, max_rw = cur_rs, cur_rw
+    if max_rs >= 5 or max_rw >= 135:
+        probs.append(f'unbroken raw run ({max_rs} sents, {max_rw}w >= limit 4s/130w)')
 
     for pat in BANNED_AI:
         if re.search(pat, B.lower()):
