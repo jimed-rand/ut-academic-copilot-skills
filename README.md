@@ -11,6 +11,8 @@
 > - Penggunaan wajib mematuhi **Peraturan Rektor Universitas Terbuka Nomor 436 Tahun 2025** (Kode Etik Sivitas Akademika terkait *KA Generatif*), **Panduan Penggunaan GenAI pada Pembelajaran di Perguruan Tinggi** (Ditjen Diktiristek Kemendikbudristek, 2024), serta aturan spesifik mata kuliah/dosen/ujian di institusi masing-masing.
 > - Jika suatu ujian (UAS/THE/TMK) atau tugas melarang penggunaan AI, **jangan gunakan skill ini**.
 
+> [!NOTE]
+> Skill ini hanya membantu bagi pengguna **LibreOffice** dengan format **OpenDocument** dan pengguna Linux, dan bagi anda yang menggunakan skills ini harap menggunakan LibreOffice untuk pengerjaan dokumen nya di dalam lingkungan Linux (jika anda menggunakan Windows, dapat memanfaatkan WSL2 atau membuat mesin virtual dengan VMWare Workstation atau Hyper-V serta memasang distribusi Linux favorit anda). Skills ini tidak mendukung dokumen dengan format **Office Open XML (OOXML)** yang digunakan Microsoft 365.
 ---
 
 ## Daftar Skill
