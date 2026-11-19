@@ -12,7 +12,10 @@
 > - Jika suatu ujian (UAS/THE/TMK) atau tugas melarang penggunaan AI, **jangan gunakan skill ini**.
 
 > [!NOTE]
-> Skill ini hanya membantu bagi pengguna **LibreOffice** dengan format **OpenDocument** dan pengguna Linux, dan bagi anda yang menggunakan skills ini harap menggunakan LibreOffice untuk pengerjaan dokumen nya di dalam lingkungan Linux (jika anda menggunakan Windows, dapat memanfaatkan WSL2 atau membuat mesin virtual dengan VMWare Workstation atau Hyper-V serta memasang distribusi Linux favorit anda). Skills ini tidak mendukung dokumen dengan format **Office Open XML (OOXML)** yang digunakan Microsoft 365.
+> Untuk pemakaian **mesin lokal (CLI Agent)**, skill ini dirancang khusus bagi pengguna **Linux** dan **LibreOffice** dengan format **OpenDocument (`.odt`)** (pengguna Windows dapat memanfaatkan **WSL2** atau mesin virtual melalui **VMware Workstation**, **Hyper-V**, maupun **VirtualBox** dengan distribusi Linux favorit Anda). Skill ini **tidak mendukung** dokumen berformat **Office Open XML (OOXML / `.docx`)** milik Microsoft 365.
+>
+> **Pengecualian Web AI/LLM:** Jika digunakan melalui platform **Web AI/LLM** yang memiliki *sandbox* Linux/Python & pembuat dokumen bawaan (seperti **Claude Web** beserta fitur *Skills*/*Code Execution* dan platform serupa), pembuatan dokumen `.odt`/`.pdf` serta eksekusi skrip audit tetap dapat berjalan langsung di *cloud* dari sistem operasi apa pun—meskipun penyuntingan akhir di lokal tetap disarankan menggunakan **LibreOffice Writer**.
+
 ---
 
 ## Daftar Skill
@@ -21,6 +24,38 @@
 |---|---|
 | [`metodologi-penelitian-univterbuka`](./metodologi-penelitian-univterbuka/SKILL.md) | Penyusunan, revisi, parafrase struktural, dan audit proposal penelitian (Bab I–III/IV/V) lintas fakultas Universitas Terbuka (FST, FEB, FHISIP, FKIP, Pascasarjana) maupun perguruan tinggi lain, dengan verifikasi referensi nyata, audit anti-slop, serta kalibrasi lolos pemindaian **DrillBit (< 30% AI Writing & < 30% Similaritas)**. |
 | [`penjawab-tugas-akademik-ut`](./penjawab-tugas-akademik-ut/SKILL.md) | Penyusunan, audit, parafrase akademik, dan pemformatan tugas tutorial, diskusi Tuton/LMS, laporan praktikum/proyek/kasus lintas fakultas, serta naskah panduan video demonstrasi yang memenuhi ambang **DrillBit (< 30% AI Writing & Similaritas)**. |
+
+---
+
+## Kompatibilitas Sistem & Prasyarat (Linux & LibreOffice)
+
+| Komponen | Status Dukungan | Keterangan Teknis |
+|---|---|---|
+| **Sistem Operasi: Linux** (Debian/Ubuntu, Arch, Fedora, dll.) | ✅ **Didukung Penuh** | Seluruh perintah CLI, skrip Python, dan alur otomatisasi dibuat dan diuji pada lingkungan shell Linux (Bash/POSIX). |
+| **Sistem Operasi: Windows** | ⚠️ **Hanya via WSL2 / VM Linux** | Windows native tidak didukung. Pengguna Windows dapat menjalankan alur ini melalui **WSL2** atau mesin virtual (**VMware Workstation**, **Hyper-V**, **VirtualBox**) yang menjalankan Linux + LibreOffice. |
+| **Sistem Operasi: macOS** | ❌ **Tidak Didukung** | Tidak diuji dan tidak didukung secara resmi. |
+| **Pengolah Kata: LibreOffice Writer — OpenDocument (`.odt`)** | ✅ **Didukung Penuh** | Format dokumen utama adalah **OpenDocument Text (`.odt`)**. Skrip `odt_para.py` menyunting `content.xml` secara aman, mempertahankan cetak miring (`T_Italic`), gambar tanda tangan (`Pictures/*` + `META-INF/manifest.xml`), dan mengekspor PDF via `libreoffice --headless --convert-to pdf`. |
+| **Pengolah Kata: Microsoft 365 / Word — OOXML (`.docx`), WPS, Google Docs** | ❌ **Tidak Didukung** | Format **Office Open XML (OOXML / `.docx`)** tidak didukung oleh alur sunting & ekspor dokumen. Konversi terlebih dahulu ke **OpenDocument (`.odt`)** melalui LibreOffice Writer sebelum menggunakan skill ini. |
+| **Mode Web AI/LLM** (Claude Web, ChatGPT, Gemini Web, dll.) | ✅ **Didukung (Pengecualian)** | Platform Web LLM yang memiliki *sandbox* Linux/Python dan pembuat dokumen (seperti **Claude Web** dengan *Skills*/*Code Execution*) tetap dapat menjalankan skrip `scripts/*.py` serta menghasilkan dokumen `.odt`/`.pdf` langsung dari *cloud* tanpa bergantung pada OS lokal pengguna. Untuk penyuntingan manual setelah diunduh, tetap gunakan **LibreOffice Writer**. |
+
+### Paket Prasyarat di Linux
+Seluruh skrip Python di repositori ini menggunakan *Python standard library* (tidak perlu `pip install`). Pastikan paket sistem berikut sudah terpasang di Linux Anda:
+
+- **`python3`** ($\ge 3.10$) — menjalankan skrip audit, parafrase, dan verifikasi sitasi (`scripts/*.py`).
+- **`libreoffice`** (`libreoffice-writer` / `libreoffice-fresh` / `libreoffice-still`) — penyuntingan `.odt` dan kompilasi `.odt` ke `.pdf` secara *headless*.
+- **`poppler-utils`** (`pdftotext`, `pdftoppm`) — ekstraksi soal PDF, verifikasi nomor halaman `DAFTAR ISI`, dan render halaman PNG untuk pemeriksaan visual.
+- **Font Serif Akademik** (`fonts-liberation` / `ttf-liberation` atau `ttf-mscorefonts-installer`) — menjaga tata letak PDF identik dengan standar *Times New Roman* / *Liberation Serif*.
+
+```bash
+# Debian / Ubuntu / Linux Mint / Pop!_OS
+sudo apt update && sudo apt install -y python3 libreoffice poppler-utils fonts-liberation
+
+# Arch Linux / EndeavourOS / Manjaro
+sudo pacman -S --needed python libreoffice-fresh poppler ttf-liberation
+
+# Fedora
+sudo dnf install -y python3 libreoffice poppler-utils liberation-serif-fonts
+```
 
 ---
 
@@ -85,15 +120,15 @@ cp -r metodologi-penelitian-univterbuka penjawab-tugas-akademik-ut ~/.agents/ski
 Skrip audit bawaan (hanya menggunakan Python 3 standard library) dapat dijalankan langsung dari dalam folder masing-masing skill:
 
 ```bash
-# Audit AI slop, estimasi DrillBit AI (< 30%), PUEBI italic, burstiness, & sitasi APA 1-ke-1
-python3 scripts/ut_audit.py <berkas.md|.odt|.docx>
+# Audit AI slop, estimasi DrillBit AI (< 30%), PUEBI italic, rangkaian kalimat, & sitasi APA 1-ke-1
+python3 scripts/ut_audit.py <berkas.odt|.md>
 
 # Audit lengkap disertai cek similaritas 8-gram (< 30%) terhadap draf/tugas terdahulu
 python3 scripts/ut_audit.py <Tugas4.odt> --ref <Tugas1.odt> <Tugas2.odt> <Tugas3.odt>
 ```
 
-### 3. Web AI/LLM (Claude Web, Gemini Web, dll.)
-Kompres masing-masing folder skill menjadi `.zip` (atau `.skill`) lalu unggah ke antarmuka web AI yang mendukung *Skills* / *Custom Instructions*.
+### 3. Web AI/LLM (Claude Web, ChatGPT, Gemini Web — Pengecualian Lintas OS)
+Kompres masing-masing folder skill menjadi `.zip` (atau `.skill`) lalu unggah ke antarmuka web AI yang mendukung *Skills* / *Custom Instructions*. Pada platform yang menyediakan *sandbox* Linux/Python dan pembuat dokumen bawaan (seperti **Claude Web**), agen tetap dapat menyusun dokumen `.odt`/`.pdf` dan menjalankan skrip audit secara langsung di *cloud*; setelah berkas `.odt` diunduh, buka dan rapikan di **LibreOffice Writer**.
 
 ---
 
